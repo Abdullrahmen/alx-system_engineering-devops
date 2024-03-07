@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# install Certbot
+# https://certbot.eff.org/instructions?ws=haproxy&os=ubuntufocal
+#sudo apt-get remove certbot
+#sudo snap install --classic certbot
+#sudo ln -s /snap/bin/certbot /usr/bin/certbot
+#sudo certbot certonly --standalone
+
+# Renew every 30 days
+certbot renew --pre-hook "service haproxy stop" --post-hook "service haproxy start"
+
+# Install the certificate by combine chain+privkey
+DOMAIN='www.abdullrahmen.tech' sudo -E bash -c 'cat /etc/letsencrypt/live/$DOMAIN/fullchain.pem /etc/letsencrypt/live/$DOMAIN/privkey.pem > /etc/haproxy/certs/$DOMAIN.pem'
+
+# in haproxy.cfg
+# bind *:443 ssl crt /etc/haproxy/certs/www.abdullrahmen.tech.pem
